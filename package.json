@@ -1,0 +1,56 @@
+{
+    "name": "tabby-mcp-jc",
+    "version": "0.1.1",
+    "description": "Exposes Tabby terminal tabs over MCP — list tabs, read terminal output, type commands (never submits). Works with Claude Desktop, Codex, Cursor, or any MCP client.",
+    "keywords": [
+        "tabby-plugin"
+    ],
+    "main": "dist/index.js",
+    "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
+    "scripts": {
+        "build": "webpack --progress --color",
+        "watch": "webpack --progress --color --watch",
+        "typecheck": "tsc --noEmit",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "node --import ./test/register-ts.mjs --test test/sanitize.test.mts test/whitelist.test.mts test/protocol.test.mts test/tool-definitions.test.mts test/line-state.test.mts test/http-auth.test.mts test/http-bind.test.mts test/caller.test.mts test/read-slice.test.mts test/read-cursor.test.mts test/token-mask.test.mts test/codex-bearer.test.mts test/cursor-mcp.test.mts test/pause-flag.test.mts test/remote-prompt.test.mts test/activity.test.mts test/focus-countdown.test.mts test/i18n.test.mts test/i18n-keys.test.mts test/confirm-non-whitelisted.test.mts test/http-process-changed.test.mts",
+        "prepublishOnly": "npm run build"
+    },
+    "files": [
+        "dist/index.js",
+        "dist/shim.js",
+        "dist/http-server.js",
+        "README.md",
+        "README.zh-CN.md",
+        "LICENSE"
+    ],
+    "author": "JCSUN",
+    "license": "CC-BY-NC-4.0",
+    "devDependencies": {
+        "@angular/common": "^15.2.10",
+        "@angular/core": "^15.2.10",
+        "@angular/forms": "^15.2.10",
+        "@ng-bootstrap/ng-bootstrap": "^14.2.0",
+        "@types/lodash": "^4.17.27",
+        "@types/node": "^20.11.0",
+        "lodash": "4.18.1",
+        "prettier": "^3.9.10",
+        "rxjs": "^7.8.1",
+        "tabby-core": "1.0.231-nightly.0",
+        "tabby-settings": "1.0.231-nightly.0",
+        "tabby-terminal": "1.0.231-nightly.0",
+        "ts-loader": "^9.5.1",
+        "typescript": "~4.9.5",
+        "webpack": "^5.90.0",
+        "webpack-cli": "^5.1.4"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fortunatex-init/tabby-mcp-jc.git"
+    },
+    "homepage": "https://github.com/fortunatex-init/tabby-mcp-jc",
+    "bugs": {
+        "url": "https://github.com/fortunatex-init/tabby-mcp-jc/issues"
+    }
+}
+

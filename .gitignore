@@ -1,0 +1,30 @@
+# 依赖
+node_modules/
+.pnpm-store/
+
+# 构建产物 —— 发布时由 package.json 的 files 字段带上,不进仓库
+dist/
+
+# 旧打包产物目录（已不再使用）
+build/
+*.zip
+
+# 日志
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 编辑器 / IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# 系统
+.DS_Store
+Thumbs.db
+AGENTS.md
+.grokbot
+# 注意:pnpm-lock.yaml 要提交,不要加进来 —— 它保证构建可复现
+# npm pack 产物
+*.tgz

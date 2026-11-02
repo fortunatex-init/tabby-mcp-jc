@@ -1,0 +1,12 @@
+
+:root {
+    --bs-body-bg: canvas;
+    --bs-body-color: canvastext;
+    --bs-primary: #0d6efd;
+    --bs-info: #0dcaf0;
+    --bs-success: #198754;
+    --bs-warning: #ffc107;
+    --bs-danger: #dc3545;
+    --mcp-toast-accent: var(--bs-info);
+    --mcp-modal-accent: var(--bs-primary);
+}
