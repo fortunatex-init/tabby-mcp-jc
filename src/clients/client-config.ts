@@ -18,6 +18,7 @@ export interface ClientStatus {
     configExists: boolean;
     parseError?: string;
     installed: boolean;
+    orphans?: boolean;
     stale: boolean;
     conflict: boolean;
     recordedEndpoint?: string;

@@ -7,27 +7,21 @@ import {
     ActionResult,
     BACKUP_SUFFIX,
     ClientStatus,
-    OWNERSHIP_MARKER,
-    isOurPath,
-    sameUrl,
     writeConfigFile,
 } from './client-config';
+import {
+    CODEX_SERVER_KEY,
+    inspectCodexConfig,
+    renderCodexInstall,
+    renderCodexSection,
+    renderCodexUninstall,
+} from '../core/codex-config';
 import { getLocalMcpUrl, readBearerToken, readHttpPort } from '../core/http-endpoint';
 import { t } from '../i18n/t';
 
-export const CODEX_SERVER_KEY = 'tabby';
-
-const OUR_HEADER = /^[ \t]*\[[ \t]*mcp_servers[ \t]*\.[ \t]*"?tabby"?[ \t]*][ \t]*(?:#.*)?$/;
-
-const ANY_HEADER = /^[ \t]*\[\[?[^\][]*]]?[ \t]*(?:#.*)?$/;
+export { CODEX_SERVER_KEY };
 
 export type CodexStatus = ClientStatus;
-
-interface Section {
-    start: number;
-    end: number;
-    body: string;
-}
 
 @Injectable({ providedIn: 'root' })
 export class CodexService {
@@ -72,37 +66,22 @@ export class CodexService {
             return s;
         }
 
-        let lines: string[];
+        let raw: string;
         try {
-            lines = this.read(configPath).lines;
+            raw = fs.readFileSync(configPath, 'utf8');
         } catch (e: any) {
             s.parseError = e.message;
             return s;
         }
 
-        if (lines.filter(l => OUR_HEADER.test(l)).length > 1) {
-            s.parseError = `配置里有多个 [mcp_servers.${CODEX_SERVER_KEY}] 段,TOML 不允许重复定义`;
-            return s;
-        }
-
-        const section = this.findSection(lines);
-        if (!section) {
-            return s;
-        }
-        if (!this.isOurs(section.body)) {
-            s.conflict = true;
-            return s;
-        }
-
-        s.installed = true;
-        s.recordedEndpoint = this.extractUrl(section.body) ?? this.extractShimPath(section.body);
-        s.recordedShimPath = s.recordedEndpoint;
-        const currentUrl = this.mcpUrl;
-        if (this.extractShimPath(section.body) && !this.extractUrl(section.body)) {
-            s.stale = true;
-        } else {
-            s.stale = !sameUrl(s.recordedEndpoint, currentUrl);
-        }
+        const inspected = inspectCodexConfig(raw, this.mcpUrl);
+        s.installed = inspected.installed;
+        s.orphans = inspected.orphans;
+        s.stale = inspected.stale;
+        s.conflict = inspected.conflict;
+        s.parseError = inspected.parseError;
+        s.recordedEndpoint = inspected.recordedEndpoint;
+        s.recordedShimPath = inspected.recordedEndpoint;
         return s;
     }
 
@@ -128,58 +107,12 @@ export class CodexService {
             }
         }
 
-        const { lines, eol } = this.split(raw);
-
-        if (lines.filter(l => OUR_HEADER.test(l)).length > 1) {
-            return {
-                ok: false,
-                message: t('install.codexDuplicate', { name: CODEX_SERVER_KEY }),
-            };
+        const rewritten = renderCodexInstall(raw, this.mcpUrl, token);
+        if (!rewritten.ok) {
+            return { ok: false, message: rewritten.message };
         }
 
-        const section = this.findSection(lines);
-        if (section && !this.isOurs(section.body)) {
-            return {
-                ok: false,
-                message: t('install.codexForeign', { name: CODEX_SERVER_KEY }),
-            };
-        }
-
-        const rendered = this.renderSection();
-        let next: string[];
-        if (section) {
-            next = [...lines.slice(0, section.start), ...rendered, ...lines.slice(section.end)];
-        } else {
-            next = [...lines];
-            while (next.length && !next[next.length - 1].trim()) {
-                next.pop();
-            }
-            if (next.length) {
-                next.push('');
-            }
-            next.push(...rendered);
-        }
-
-        while (next.length && !next[next.length - 1].trim()) {
-            next.pop();
-        }
-        next.push('');
-
-        const text = next.join(eol);
-
-        const check = this.findSection(this.split(text).lines);
-        if (
-            !check ||
-            !this.isOurs(check.body) ||
-            !sameUrl(this.extractUrl(check.body), this.mcpUrl)
-        ) {
-            return {
-                ok: false,
-                message: t('install.unrecognized'),
-            };
-        }
-
-        const written = writeConfigFile(configPath, text);
+        const written = writeConfigFile(configPath, rewritten.text);
         if (!written.ok) return written;
 
         return {
@@ -210,34 +143,15 @@ export class CodexService {
             };
         }
 
-        const { lines, eol } = this.split(raw);
-        const section = this.findSection(lines);
-        if (!section) {
-            return { ok: true, message: t('install.notPresent') };
+        const rewritten = renderCodexUninstall(raw);
+        if (!rewritten.ok) {
+            return { ok: false, message: rewritten.message };
         }
-        if (!this.isOurs(section.body)) {
-            return {
-                ok: false,
-                message: t('install.codexNotOurs', {
-                    name: CODEX_SERVER_KEY,
-                }),
-            };
+        if (!rewritten.removed) {
+            return { ok: true, message: rewritten.message || t('install.notPresent') };
         }
 
-        const next = [...lines.slice(0, section.start), ...lines.slice(section.end)];
-        while (next.length && !next[next.length - 1].trim()) {
-            next.pop();
-        }
-        const text = next.length ? next.join(eol) + eol : '';
-
-        if (this.findSection(this.split(text).lines)) {
-            return {
-                ok: false,
-                message: t('install.stillThere'),
-            };
-        }
-
-        const written = writeConfigFile(configPath, text);
+        const written = writeConfigFile(configPath, rewritten.text);
         if (!written.ok) return written;
 
         return {
@@ -252,89 +166,6 @@ export class CodexService {
     }
 
     get configSnippet(): string {
-        return this.renderSection().join('\n');
-    }
-
-    private read(p: string): { lines: string[]; eol: string } {
-        return this.split(fs.readFileSync(p, 'utf8'));
-    }
-
-    private split(raw: string): { lines: string[]; eol: string } {
-        return {
-            lines: raw.length ? raw.split(/\r?\n/) : [],
-            eol: raw.includes('\r\n') ? '\r\n' : '\n',
-        };
-    }
-
-    private findSection(lines: string[]): Section | null {
-        const start = lines.findIndex(l => OUR_HEADER.test(l));
-        if (start < 0) {
-            return null;
-        }
-        let end = lines.length;
-        for (let i = start + 1; i < lines.length; i++) {
-            if (ANY_HEADER.test(lines[i])) {
-                end = i;
-                break;
-            }
-        }
-        return { start, end, body: lines.slice(start, end).join('\n') };
-    }
-
-    private renderSection(): string[] {
-        const url = this.mcpUrl;
-        const token = this.bearerToken || 'REPLACE_WITH_TOKEN';
-        return [
-            `[mcp_servers.${CODEX_SERVER_KEY}]`,
-            `# ${OWNERSHIP_MARKER}`,
-            `url = ${this.quote(url)}`,
-            `http_headers = { Authorization = ${this.quote('Bearer ' + token)} }`,
-        ];
-    }
-
-    private isOurs(body: string): boolean {
-        if (body.includes(OWNERSHIP_MARKER) || body.includes('tabby-claude-mcp')) {
-            return true;
-        }
-        if (this.extractShimPath(body)) {
-            return true;
-        }
-        const url = this.extractUrl(body);
-        return typeof url === 'string' && /127\.0\.0\.1:\d+\/mcp/.test(url);
-    }
-
-    private extractUrl(body: string): string | undefined {
-        const m = /(?:^|\n)[ \t]*url[ \t]*=[ \t]*("(?:[^"\\]|\\.)*")/m.exec(body);
-        if (!m) {
-            return undefined;
-        }
-        return this.unquote(m[1]);
-    }
-
-    private extractShimPath(body: string): string | undefined {
-        const strings = body.match(/"(?:[^"\\]|\\.)*"/g) ?? [];
-        for (const s of strings) {
-            const v = this.unquote(s);
-            if (isOurPath(v) && /shim\.js|http-server\.js/.test(v)) {
-                return v;
-            }
-        }
-        return undefined;
-    }
-
-    private quote(v: string): string {
-        return `"${v.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
-    }
-
-    private unquote(s: string): string {
-        return s.slice(1, -1).replace(/\\(.)/g, (_, c: string) => {
-            if (c === 'n') {
-                return '\n';
-            }
-            if (c === 't') {
-                return '\t';
-            }
-            return c;
-        });
+        return renderCodexSection(this.mcpUrl, this.bearerToken).join('\n');
     }
 }

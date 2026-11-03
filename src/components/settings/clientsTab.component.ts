@@ -532,13 +532,19 @@ export class ClaudeMcpClientsTabComponent implements OnDestroy {
 
     async uninstallCodex(): Promise<void> {
         if (this.busyCodex) return;
+        const orphanOnly = !!this.codexStatus.orphans && !this.codexStatus.installed;
         const ok = await this.confirm.ask(
             t('clients.codex.removeTitle'),
 
-            t('clients.codex.removeBody', {
-                path: this.codexStatus.configPath,
-                name: CODEX_SERVER_KEY,
-            }),
+            t(
+                orphanOnly
+                    ? 'clients.codex.removeOrphanBody'
+                    : 'clients.codex.removeBody',
+                {
+                    path: this.codexStatus.configPath,
+                    name: CODEX_SERVER_KEY,
+                },
+            ),
 
             t('common.remove'),
 

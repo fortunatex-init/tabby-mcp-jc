@@ -67,7 +67,7 @@ export type ClientBrand = 'claude' | 'codex' | 'cursor';
                 <button
                     class="btn btn-outline-danger btn-sm"
                     (click)="remove.emit()"
-                    [disabled]="busy || !status.installed"
+                    [disabled]="busy || !(status.installed || status.orphans)"
                 >
                     {{ 'card.remove' | mcpT }}
                 </button>

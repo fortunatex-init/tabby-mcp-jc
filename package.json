@@ -1,9 +1,23 @@
 {
     "name": "tabby-mcp-jc",
-    "version": "0.1.1",
-    "description": "Exposes Tabby terminal tabs over MCP — list tabs, read terminal output, type commands (never submits). Works with Claude Desktop, Codex, Cursor, or any MCP client.",
+    "version": "0.1.2",
+    "description": "Tabby plugin that exposes Tabby terminals to AI agents via MCP (Claude Desktop, Codex/ChatGPT, Cursor). Local pipe + Streamable HTTP, one-click client setup, whitelist and confirmation.",
     "keywords": [
-        "tabby-plugin"
+        "tabby-plugin",
+        "tabby",
+        "mcp",
+        "model-context-protocol",
+        "mcp-server",
+        "claude",
+        "claude-desktop",
+        "codex",
+        "chatgpt",
+        "cursor",
+        "ai",
+        "ai-agent",
+        "terminal",
+        "ssh",
+        "llm"
     ],
     "main": "dist/index.js",
     "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
@@ -13,7 +27,7 @@
         "typecheck": "tsc --noEmit",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "test": "node --import ./test/register-ts.mjs --test test/sanitize.test.mts test/whitelist.test.mts test/protocol.test.mts test/tool-definitions.test.mts test/line-state.test.mts test/http-auth.test.mts test/http-bind.test.mts test/caller.test.mts test/read-slice.test.mts test/read-cursor.test.mts test/token-mask.test.mts test/codex-bearer.test.mts test/cursor-mcp.test.mts test/pause-flag.test.mts test/remote-prompt.test.mts test/activity.test.mts test/focus-countdown.test.mts test/i18n.test.mts test/i18n-keys.test.mts test/confirm-non-whitelisted.test.mts test/http-process-changed.test.mts",
+        "test": "node --import ./test/register-ts.mjs --test test/sanitize.test.mts test/whitelist.test.mts test/protocol.test.mts test/tool-definitions.test.mts test/line-state.test.mts test/http-auth.test.mts test/http-bind.test.mts test/caller.test.mts test/read-slice.test.mts test/read-cursor.test.mts test/token-mask.test.mts test/codex-bearer.test.mts test/codex-service.test.mts test/cursor-mcp.test.mts test/pause-flag.test.mts test/remote-prompt.test.mts test/activity.test.mts test/focus-countdown.test.mts test/i18n.test.mts test/i18n-keys.test.mts test/confirm-non-whitelisted.test.mts test/http-process-changed.test.mts",
         "prepublishOnly": "npm run build"
     },
     "files": [
@@ -53,4 +67,3 @@
         "url": "https://github.com/fortunatex-init/tabby-mcp-jc/issues"
     }
 }
-

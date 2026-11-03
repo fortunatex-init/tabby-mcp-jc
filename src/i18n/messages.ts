@@ -756,7 +756,11 @@ export const MESSAGES: Record<string, { zh: string; en: string }> = {
         zh: '会从 {path} 里删除 [mcp_servers.{name}] 这一段。\n原文件会先备份,其它内容不受影响。',
         en: 'This will delete the [mcp_servers.{name}] section from {path}.\nThe original file is backed up first. The rest of the file is left alone.',
     },
-    'clients.codex.removed': {
+        'clients.codex.removeOrphanBody': {
+        zh: '会从 {path} 清理残留的 [mcp_servers.{name}.*] 子表（主段已不在）。\n原文件会先备份,其它内容不受影响。',
+        en: 'This will clean leftover [mcp_servers.{name}.*] sub-tables from {path} (the main section is already gone).\nThe original file is backed up first. The rest of the file is left alone.',
+    },
+'clients.codex.removed': {
         zh: '已从 Codex 移除',
         en: 'Removed from Codex',
     },
@@ -1099,6 +1103,10 @@ export const MESSAGES: Record<string, { zh: string; en: string }> = {
     'install.codexNotOurs': {
         zh: '[mcp_servers.{name}] 这一段不是本插件写的,没有删除。请手动处理。',
         en: 'The [mcp_servers.{name}] section was not written by this plugin, so it was not deleted. Handle it yourself.',
+    },
+    'install.codexOrphanSubtables': {
+        zh: '配置里残留了 [mcp_servers.{name}.*] 子表，但缺少主段。Codex 会因此无法启动，请点移除清理。',
+        en: 'Orphan [mcp_servers.{name}.*] sub-tables remain without the main section. Codex cannot start; click Remove to clean them up.',
     },
     'install.stillThere': {
         zh: '无法完成操作。请重试，或反馈问题。',

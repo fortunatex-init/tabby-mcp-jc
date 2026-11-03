@@ -1,13 +1,42 @@
 # tabby-mcp-jc
 
+[![npm version](https://img.shields.io/npm/v/tabby-mcp-jc.svg)](https://www.npmjs.com/package/tabby-mcp-jc)
+[![npm downloads](https://img.shields.io/npm/dm/tabby-mcp-jc.svg)](https://www.npmjs.com/package/tabby-mcp-jc)
 [![Tabby](https://img.shields.io/badge/Tabby-plugin-4a90d9)](https://tabby.sh/)
-![version](https://img.shields.io/badge/version-0.1.1-blue)
-![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20Streamable%20HTTP-8a63d2)
-![license](https://img.shields.io/badge/license-CC%20BY--NC%204.0-green)
+[![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20Streamable%20HTTP-8a63d2)](https://modelcontextprotocol.io/)
+[![license](https://img.shields.io/badge/license-CC%20BY--NC%204.0-green)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-An MCP assistant for [Tabby](https://tabby.sh/). The model can list tabs, read the screen, and type into a terminal. **It never presses Enter.** You do.
+**Give Claude Desktop, Codex/ChatGPT, and Cursor a safe window into your Tabby terminals** — list tabs, read the screen, and type commands. **The model never presses Enter.** You do.
+
+![Plugin overview — local pipe + Streamable HTTP](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/01-overview.png)
+
+## Install
+
+1. Install [Tabby](https://tabby.sh/).
+2. Open **Settings → Plugins**, search for `tabby-mcp-jc`, and install.
+3. Or install from npm into a folder Tabby can load as a plugin (the Plugins UI is preferred once the package is indexed).
+
+For local development: `pnpm build`, then start Tabby with `TABBY_PLUGINS` pointing at this repo. **Codex, Cursor, and HTTP do not need Node.** Claude Desktop's stdio shim and a local build need Node ≥ 20.
+
+## Connect your AI client
+
+In Tabby open **Settings → MCP Server → Clients**:
+
+1. Pick **Claude Desktop**, **Codex**, or **Cursor**.
+2. Click the one-click **Import / Install** button (stdio for Claude; Streamable HTTP for Codex and Cursor).
+3. Turn on **Read the terminal** and **Wait for Enter before continuing** under **Config** if you want those tools.
+
+That's it — whitelist and confirmation dialogs stay on for non-whitelisted commands.
+
+![Clients — Claude Desktop / Codex / Cursor](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/02-clients.png)
+
+## Screenshots
+
+| Overview (dual lanes) | Clients | Config |
+| --- | --- | --- |
+| ![Overview](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/01-overview.png) | ![Clients](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/02-clients.png) | ![Config](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/03-config.png) |
 
 ## Four tools
 
@@ -42,15 +71,6 @@ The toolbar button opens this plugin's settings. Its submenu can pause or resume
 cloudflared tunnel --url http://127.0.0.1:18765
 ```
 
-## Install
-
-1. Install [Tabby](https://tabby.sh/). **Codex, Cursor, and HTTP do not need Node.** Claude Desktop's stdio shim and a local `pnpm build` need Node ≥ 20.
-2. In Tabby go to **Settings → Plugins**, search for `tabby-mcp-jc`, and install (once published). For local development: `pnpm build`, then start Tabby with `TABBY_PLUGINS` pointing at this repo.
-3. Settings → **Clients**: one click for Claude (stdio), Codex (HTTP), or Cursor (HTTP, written to user-level `~/.cursor/mcp.json`).
-4. To read the screen or use `await_enter`, turn on **Read the terminal** and **Wait for Enter before continuing** under **Config**.
-
-The recent-calls log has a **caller** column (Codex / Claude / Cursor / …).
-
 ## Safety
 
 - Never presses Enter. `write_terminal` strips newlines.
@@ -71,4 +91,3 @@ pnpm install && pnpm test && pnpm build
 ### UI colors
 
 `src/styles/tabby-theme-vars.css` is editor-only (not bundled). At runtime Tabby/Bootstrap supplies `--bs-*`. Prefer `var(--bs-primary)`, `var(--bs-body-color)`, etc. in component styles instead of hard-coded hex.
-
