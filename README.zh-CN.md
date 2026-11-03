@@ -10,7 +10,7 @@
 
 **给 Claude Desktop、Codex/ChatGPT、Cursor 开一扇安全的 Tabby 终端窗口** — 列标签、读屏幕、把命令打进终端。**回车永远由你来按，模型不会替你按。**
 
-![插件总览 — 本地管道 + Streamable HTTP](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/01-overview.png)
+![插件总览 — 本地管道 + Streamable HTTP](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/zh-01-overview.png)
 
 ## 安装
 
@@ -30,13 +30,13 @@
 
 白名单外的命令仍会弹确认框，安全策略不变。
 
-![客户端 — Claude Desktop / Codex / Cursor](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/02-clients.png)
+![客户端 — Claude Desktop / Codex / Cursor](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/zh-02-clients.png)
 
 ## 截图
 
-| 总览（双通道） | 客户端 | 配置 |
+| 总览（双通道） | 客户端 | 命令白名单 |
 | --- | --- | --- |
-| ![Overview](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/01-overview.png) | ![Clients](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/02-clients.png) | ![Config](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/03-config.png) |
+| ![Overview](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/zh-01-overview.png) | ![Clients](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/zh-02-clients.png) | ![白名单](https://raw.githubusercontent.com/fortunatex-init/tabby-mcp-jc/master/docs/screenshots/zh-03-whitelist.png) |
 
 ## 四个工具
 
